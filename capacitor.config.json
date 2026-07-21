@@ -1,0 +1,13 @@
+{
+  "appId": "com.lokiprimex.app",
+  "appName": "Loki Prime X",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "Keyboard": {
+      "resize": "none",
+      "style": "dark",
+      "displayStyle": "dark"
+    }
+  }
+}

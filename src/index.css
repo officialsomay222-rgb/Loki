@@ -300,7 +300,9 @@ body {
 }
 
 /* Allow text selection ONLY in text inputs */
-input, textarea, [contenteditable="true"] {
+input,
+textarea,
+[contenteditable="true"] {
   -webkit-user-select: text;
   user-select: text;
   touch-action: manipulation;
@@ -1393,16 +1395,28 @@ html:not(.dark) .awakened-mode .glass-button:hover {
   padding-bottom: clamp(0px, env(safe-area-inset-bottom, 0px), 32px);
 }
 .keyboard-safe-area-bottom {
-  padding-bottom: max(env(safe-area-inset-bottom, 0px), var(--keyboard-inset-bottom, 0px));
-  transition: padding-bottom 0.05s ease-out;
+  padding-bottom: max(
+    env(safe-area-inset-bottom, 0px),
+    max(env(keyboard-inset-bottom, 0px), var(--keyboard-inset-bottom, 0px))
+  );
+  transition: padding-bottom 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .input-keyboard-safe-area {
-  bottom: max(env(safe-area-inset-bottom, 0px), var(--keyboard-inset-bottom, 0px));
-  transition: bottom 0.05s ease-out;
+  bottom: max(
+    env(safe-area-inset-bottom, 0px),
+    max(env(keyboard-inset-bottom, 0px), var(--keyboard-inset-bottom, 0px))
+  );
+  transition: bottom 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .attachment-keyboard-safe-area {
-  padding-bottom: calc(16px + max(env(safe-area-inset-bottom, 0px), var(--keyboard-inset-bottom, 0px)));
-  transition: padding-bottom 0.05s ease-out;
+  padding-bottom: calc(
+    16px +
+      max(
+        env(safe-area-inset-bottom, 0px),
+        max(env(keyboard-inset-bottom, 0px), var(--keyboard-inset-bottom, 0px))
+      )
+  );
+  transition: padding-bottom 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
