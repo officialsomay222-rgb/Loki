@@ -1,0 +1,72 @@
+name: Android Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14'
+          validate-wrappers: false
+          cache-disabled: true
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Generate Assets
+        run: |
+          mkdir -p android/app/src/main/res/values
+          echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">Loki Prime X</string></resources>' > android/app/src/main/res/values/strings.xml
+          npx @capacitor/assets generate --android --assetPath assets
+
+      - name: Capacitor Sync
+        run: npx cap sync android
+
+      - name: Aggressive Cache Clean
+        run: |
+          rm -rf ~/.gradle/caches/
+          rm -f android/gradle/wrapper/gradle-wrapper.jar
+
+      - name: Generate Keystore
+        run: |
+          cd android/app
+          rm -f release.keystore
+          keytool -genkey -v -keystore release.keystore -alias loki -keyalg RSA -keysize 2048 -validity 10000 -storepass loki123 -keypass loki123 -dname "CN=Loki Prime X, OU=Loki, O=Loki, L=Delhi, ST=Delhi, C=IN"
+
+      - name: Build Android App
+        env:
+          KEYSTORE_FILE: release.keystore
+          KEYSTORE_PASSWORD: loki123
+          KEY_ALIAS: loki
+          KEY_PASSWORD: loki123
+        run: |
+          cd android
+          gradle assembleRelease --no-daemon --refresh-dependencies
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-signed
+          path: android/app/build/outputs/apk/release/app-release.apk
