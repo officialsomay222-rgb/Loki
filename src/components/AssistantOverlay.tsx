@@ -1,30 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChatInput } from './ChatInput';
 import { MessageBubble } from './MessageBubble';
 import { useChat } from '../contexts/ChatContext';
+import ShockwaveOnly from './ShockwaveOnly';
+import { Send } from 'lucide-react';
 
 export const AssistantOverlay = ({ onClose }: { onClose: () => void }) => {
   const { sessions, currentSessionId, sendMessage, stopGeneration } = useChat();
   const [expanded, setExpanded] = useState(false);
-
+  const [inputText, setInputText] = useState("");
+  
   const currentSession = sessions.find(s => s.id === currentSessionId);
-  const isStreaming = false; // We can check if last message is pending
-  const modelMode = currentSession?.modelMode || "gemini";
-
-  // Only show the latest message if one exists and we are active
+  
+  // We can check if last message is pending
   const recentMessages = currentSession?.messages || [];
   const latestMessage = recentMessages.length > 0 ? recentMessages[recentMessages.length - 1] : null;
+  const isStreaming = latestMessage?.role === 'user' && !latestMessage.content; // rough check for streaming/loading
   const isAssistantMessage = latestMessage?.role === 'model';
-
+  
   const handleDragEnd = async (event: any, info: any) => {
     if (info.offset.y < -50) {
-      // Dragged up
       setExpanded(true);
-
-      onClose(); // This seamlessly unmounts the overlay and reveals the main app
+      onClose(); 
     } else if (info.offset.y > 50) {
-      // Dragged down - close
       closeOverlay();
     }
   };
@@ -33,13 +31,37 @@ export const AssistantOverlay = ({ onClose }: { onClose: () => void }) => {
     onClose();
   };
 
+  const handleSend = () => {
+    if (inputText.trim()) {
+      sendMessage(inputText.trim(), false, undefined, []);
+      setInputText("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
-    <div className="absolute inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
       {/* Invisible backdrop to dismiss */}
       <div
-        className="absolute inset-0 bg-black/20"
+        className="absolute inset-0 bg-transparent"
         onClick={closeOverlay}
       />
+      
+      {/* Full-screen Shockwave Effect behind the UI */}
+      <div className="absolute inset-0 pointer-events-none">
+        <ShockwaveOnly config={{
+          waveSpeed: 1.5,
+          waveThickness: 1.2,
+          waveGlow: 1.5,
+          particleSpeed: 1.0
+        }} />
+      </div>
 
       <motion.div
         drag="y"
@@ -49,14 +71,11 @@ export const AssistantOverlay = ({ onClose }: { onClose: () => void }) => {
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="w-full bg-slate-900/95 dark:bg-[#08080c]/95 backdrop-blur-2xl rounded-t-3xl p-4 sm:p-6 pb-8 pointer-events-auto border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex flex-col gap-4 relative"
-        style={{
+        className="w-full pointer-events-auto flex flex-col gap-4 relative z-10 p-4 sm:p-6"
+        style={{ 
            paddingBottom: 'max(env(safe-area-inset-bottom), 1.5rem)'
         }}
       >
-        {/* Drag Handle */}
-        <div className="w-16 h-1.5 bg-white/30 rounded-full mx-auto cursor-grab active:cursor-grabbing" />
-
         {/* Response Area */}
         <AnimatePresence mode="popLayout">
           {isStreaming && (
@@ -64,18 +83,17 @@ export const AssistantOverlay = ({ onClose }: { onClose: () => void }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="px-2 py-4 text-cyan-400 font-medium flex items-center gap-3"
+              className="px-6 py-4 text-[#e3e3e3] font-medium flex items-center justify-center gap-3 w-full"
             >
-              <div className="w-4 h-4 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
+              <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
               Thinking...
             </motion.div>
           )}
-
           {!isStreaming && isAssistantMessage && latestMessage && (
-            <motion.div
+            <motion.div 
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
-               className="max-h-[40vh] overflow-y-auto w-full px-2 custom-scrollbar"
+               className="max-h-[40vh] overflow-y-auto w-full px-2 custom-scrollbar bg-[#2b2d31]/80 backdrop-blur-xl rounded-3xl p-4 mx-auto max-w-2xl mb-4"
             >
                <MessageBubble
                   message={latestMessage}
@@ -91,23 +109,53 @@ export const AssistantOverlay = ({ onClose }: { onClose: () => void }) => {
                   animationSpeed="normal"
                   accentColor="cyan"
                   messageDensity="comfortable"
-                  showAvatars={true}
+                  showAvatars={false}
                />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Input Area */}
-        <div className="mt-2 w-full max-w-3xl mx-auto">
-           <ChatInput
-              onSendMessage={sendMessage}
-              isLoading={isStreaming}
-              modelMode={modelMode}
-              setModelMode={() => {}}
-              onDeleteSession={() => {}}
-              currentSessionId={currentSessionId}
-              enterToSend={true}
-           />
+        {/* Input Area (Pill Search Bar) */}
+        <div className="w-full flex justify-center">
+            <div 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                maxWidth: '600px',
+                height: '72px',
+                backgroundColor: '#2b2d31',
+                borderRadius: '50px',
+                padding: '0 16px 0 32px',
+                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                boxSizing: 'border-box'
+              }}
+            >
+                <input 
+                  type="text" 
+                  placeholder="Ask anything..." 
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#e3e3e3',
+                    fontSize: '22px',
+                    fontFamily: 'sans-serif',
+                    fontWeight: 400
+                  }}
+                  autoFocus
+                />
+                <button 
+                  onClick={handleSend}
+                  className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors flex-shrink-0"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+            </div>
         </div>
       </motion.div>
     </div>
