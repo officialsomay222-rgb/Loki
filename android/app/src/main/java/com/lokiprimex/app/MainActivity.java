@@ -16,8 +16,8 @@ public class MainActivity extends BridgeActivity {
     public void onResume() {
         super.onResume();
         if (Intent.ACTION_ASSIST.equals(getIntent().getAction())) {
-            if (bridge != null) {
-                bridge.executeScript("window.isAssistantLaunch = true; window.dispatchEvent(new Event('assistantLaunch'));");
+            if (bridge != null && bridge.getWebView() != null) {
+                bridge.getWebView().evaluateJavascript("window.isAssistantLaunch = true; window.dispatchEvent(new Event('assistantLaunch'));", null);
             }
         }
     }

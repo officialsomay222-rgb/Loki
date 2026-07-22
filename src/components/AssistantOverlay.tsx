@@ -83,7 +83,7 @@ export const AssistantOverlay = ({ onClose }: { onClose: () => void }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="px-6 py-4 text-[#e3e3e3] font-medium flex items-center justify-center gap-3 w-full drop-shadow-md"
+              className="px-6 py-4 text-[#e3e3e3] font-medium flex items-center justify-center gap-3 w-full "
             >
               <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
               Thinking...
@@ -93,7 +93,7 @@ export const AssistantOverlay = ({ onClose }: { onClose: () => void }) => {
             <motion.div 
                initial={{ opacity: 0, y: 10 }}
                animate={{ opacity: 1, y: 0 }}
-               className="max-h-[40vh] overflow-y-auto w-full px-2 custom-scrollbar bg-[#2b2d31]/80 backdrop-blur-xl rounded-3xl p-4 mx-auto max-w-2xl mb-4 shadow-lg border border-white/5"
+               className="max-h-[40vh] overflow-y-auto w-full px-2 custom-scrollbar bg-[#2b2d31]/80 backdrop-blur-xl rounded-3xl p-4 mx-auto max-w-2xl mb-4  border border-white/5"
             >
                <MessageBubble
                   message={latestMessage}
@@ -127,7 +127,7 @@ export const AssistantOverlay = ({ onClose }: { onClose: () => void }) => {
                 backgroundColor: '#2b2d31', // Added transparency 
                 borderRadius: '50px',
                 padding: '0 16px 0 32px',
-                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                
                 boxSizing: 'border-box'
               }}
             >
