@@ -3,6 +3,10 @@
   "appName": "Loki Prime X",
   "webDir": "dist",
   "bundledWebRuntime": false,
+  "server": {
+    "url": "https://loki-x.vercel.app",
+    "cleartext": true
+  },
   "plugins": {
     "Keyboard": {
       "resize": "none",
