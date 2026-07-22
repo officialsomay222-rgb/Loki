@@ -8,8 +8,6 @@ coverage/
 !.env.example
 
 # === SYSTEM OVERRIDE: BLOCK GENERATED SPAM ===
-android/app/src/main/res/drawable-*/
-android/app/src/main/res/mipmap-*/
 android/app/src/main/assets/capacitor.*.json
 ios/App/App/Assets.xcassets/
 capacitor-assets-output/
