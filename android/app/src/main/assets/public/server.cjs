@@ -55,27 +55,7 @@ var getTodayDateString = () => {
   const today = /* @__PURE__ */ new Date();
   return today.toISOString().split("T")[0];
 };
-var defaultOrigins = [
-  "https://loki-x-prime.vercel.app",
-  "https://loki-x.vercel.app",
-  "http://localhost:3000",
-  "http://localhost:5173"
-];
-app.use((0, import_cors.default)({
-  origin: (origin, callback) => {
-    if (!origin) {
-      return callback(null, true);
-    }
-    const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim()).filter(Boolean) : defaultOrigins;
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use((0, import_cors.default)());
 app.use(import_express.default.json({ limit: "50mb" }));
 app.use(import_express.default.urlencoded({ limit: "50mb", extended: true }));
 app.set("trust proxy", 1);

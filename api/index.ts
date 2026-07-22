@@ -38,33 +38,8 @@ const getTodayDateString = () => {
   return today.toISOString().split('T')[0];
 };
 
-const defaultOrigins = [
-  'https://loki-x-prime.vercel.app',
-  'https://loki-x.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:5173'
-];
+app.use(cors());
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow non-browser requests (e.g. mobile apps, server-to-server)
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    const allowedOrigins = process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(',').map((o: string) => o.trim()).filter(Boolean)
-      : defaultOrigins;
-
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
