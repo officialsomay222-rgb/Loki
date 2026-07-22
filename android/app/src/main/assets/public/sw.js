@@ -81,7 +81,10 @@ define(['./workbox-b1bafff1'], (function (workbox) { 'use strict';
     "revision": "bee801bb53dc775d8dbc9d787126da8a"
   }, {
     "url": "index.html",
-    "revision": "0b59286da6309ce9e029f1d6b5a0885b"
+    "revision": "de24b78184a0bdc3d5953565813bf518"
+  }, {
+    "url": "icon.png",
+    "revision": "720149fe15391b239e8bb5cab4bdfa88"
   }, {
     "url": "Picsart_26-03-05_20-52-27-601.png",
     "revision": "a49655277b2903246471368f718292bb"
