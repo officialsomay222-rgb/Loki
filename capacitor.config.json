@@ -3,6 +3,7 @@
   "appName": "Loki Prime X",
   "webDir": "dist",
   "bundledWebRuntime": false,
+  "backgroundColor": "#00000000",
   "server": {
     "url": "https://loki-x.vercel.app",
     "cleartext": true

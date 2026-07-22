@@ -75,6 +75,15 @@ export default function App() {
   const [showSignInOverlay, setShowSignInOverlay] = useState(false);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [isAssistantMode, setIsAssistantMode] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (isAssistantMode) {
+      document.body.style.backgroundColor = "transparent";
+      document.documentElement.style.backgroundColor = "transparent";
+    } else {
+      document.body.style.backgroundColor = "";
+      document.documentElement.style.backgroundColor = "";
+    }
+  }, [isAssistantMode]);
   const [isAvatarActive, setIsAvatarActive] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
   const [isConfirmingClear, setIsConfirmingClear] = useState(false);
@@ -249,11 +258,25 @@ export default function App() {
       const params = new URLSearchParams(window.location.search);
       if (params.get("assistant") === "true") {
         setIsAssistantMode(true);
+        return;
       }
-
+      
+      // Check for global flag (set by MainActivity)
+      if ((window as any).isAssistantLaunch) {
+        setIsAssistantMode(true);
+        return;
+      }
+      
       setIsAssistantMode(false);
     };
     checkAssistantMode();
+
+    // Listen for custom event from MainActivity
+    const handleAssistantLaunch = () => {
+      setIsAssistantMode(true);
+    };
+    window.addEventListener('assistantLaunch', handleAssistantLaunch);
+    return () => window.removeEventListener('assistantLaunch', handleAssistantLaunch);
   }, []);
 
   useEffect(() => {
